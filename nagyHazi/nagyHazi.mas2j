@@ -1,0 +1,13 @@
+MAS nagyHazi {
+
+	infrastructure: Centralised
+
+	agents:
+		env;
+
+		client;
+		router;
+
+	aslSourcePath:
+		"src/asl";
+}
