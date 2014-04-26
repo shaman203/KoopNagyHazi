@@ -3,10 +3,10 @@ MAS nagyHazi {
 	infrastructure: Centralised
 
 	agents:
-		env;
+		env agentArchClass nagyHazi.GUI;
 
-		client;
-		router;
+		client#2;
+		router#10;
 
 	aslSourcePath:
 		"src/asl";
