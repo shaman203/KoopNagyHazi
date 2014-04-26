@@ -2,7 +2,6 @@
 
 package nagyHazi;
 
-import jason.*;
 import jason.asSemantics.*;
 import jason.asSyntax.*;
 

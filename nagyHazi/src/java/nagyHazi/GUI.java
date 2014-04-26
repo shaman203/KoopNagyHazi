@@ -3,6 +3,9 @@ package nagyHazi;
 
 import jason.architecture.AgArch;
 import jason.asSemantics.ActionExec;
+import jason.asSyntax.ASSyntax;
+import jason.asSyntax.ListTerm;
+import jason.asSyntax.Literal;
 import jason.asSyntax.Term;
 
 import java.awt.BorderLayout;
@@ -29,29 +32,30 @@ public class GUI extends AgArch {
 	public GUI() {
 		jt = new JTextArea(10, 30);
 		jt.setEditable(false);
-		broadcastRandom = new JButton("Broadcast random info");
+		broadcastRandom = new JButton("Add connection");
 		broadcastRandom.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
+				Literal goal = ASSyntax.createLiteral("create_connection");
+				goal.addTerms(ASSyntax.createString("router1"));
+				goal.addTerms(ASSyntax.createString("router2"));
+				goal.addTerms(ASSyntax.createNumber(5));
+				getTS().getC().addAchvGoal(goal, null);
 
 
-
-				broadcastAll.setEnabled(false);
-				broadcastRandom.setEnabled(false);
 			}
 		});
 
-		broadcastAll = new JButton("Broadcast all info");
+		broadcastAll = new JButton("Drop connection");
 		broadcastAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				/*
-				for(int i=1;i<=premiseCount;i++)
-				{
-					Literal goal = ASSyntax.createLiteral("broadcast",ASSyntax.createNumber(i));
-					getTS().getC().addAchvGoal(goal, null);
-				}
-				 */
-				broadcastAll.setEnabled(false);
-				broadcastRandom.setEnabled(false);
+				
+				Literal goal = ASSyntax.createLiteral("drop_connection");
+				goal.addTerms(ASSyntax.createString("router1"));
+				goal.addTerms(ASSyntax.createString("router2"));
+				goal.addTerms(ASSyntax.createNumber(5));
+				getTS().getC().addAchvGoal(goal, null);
+
 			}
 		});
 

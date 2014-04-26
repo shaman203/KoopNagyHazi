@@ -11,26 +11,28 @@ edge(X,Y,Z).
 
 +!start:true <- .all_names(X);
 				tell_agents(X);
-				!translateNames(X).
+				!parseAgents(X).
 
-+!translateNames([]).
++!parseAgents([]).
 
-+!translateNames([A|T])<- 	nagyHazi.translateName(A,AName);
-							+agent_name(A,AName);
-							!list(T).
++!parseAgents([A|T])<- 	nagyHazi.translateName(A,AName);
+						+agent_name(A,AName);
+						!parseAgents(T).
      				
-+!translateNames([_|T])<- 	!list(T).
++!parseAgents([_|T])<- 	!parseAgents(T).
 
-+create_connection(X,Y,D)<-	?agent_name(XHandle,X);
++!create_connection(X,Y,D)<-	?agent_name(XHandle,X);
 							?agent_name(YHandle,Y);
 							+connected(XHandle,YHandle,D);
 							+connected(YHandle,XHandle,D);
 							.send(XHandle,tell,connected(YHandle,D));
-							.send(YHandle,tell,connected(XHandle,D)).
+							.send(YHandle,tell,connected(XHandle,D));
+							.print("Added connection").
 							
-+drop_connection(X,Y,D)<-	?agent_name(XHandle,X);
++!drop_connection(X,Y,D)<-	?agent_name(XHandle,X);
 							?agent_name(YHandle,Y);
-							-connected(XHandle,YHandle,D);
-							-connected(YHandle,XHandle,D);
+							.abolish(connected(XHandle,YHandle,D));
+							.abolish(connected(YHandle,XHandle,D));
 							.send(XHandle,tell,disconnected(YHandle,D));
-							.send(YHandle,tell,disconnected(XHandle,D)).
+							.send(YHandle,tell,disconnected(XHandle,D));
+							.print("Dropped connection").
