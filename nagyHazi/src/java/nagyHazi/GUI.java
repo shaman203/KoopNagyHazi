@@ -1,15 +1,20 @@
 package nagyHazi;
 
 
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.List;
-import jason.architecture.*;
+import jason.architecture.AgArch;
 import jason.asSemantics.ActionExec;
 import jason.asSyntax.Term;
 
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 
 public class GUI extends AgArch {
@@ -19,7 +24,7 @@ public class GUI extends AgArch {
 	JButton broadcastRandom;
 	JButton broadcastAll;
 
-	
+	List<String> agentList;
 
 	public GUI() {
 		jt = new JTextArea(10, 30);
@@ -28,7 +33,7 @@ public class GUI extends AgArch {
 		broadcastRandom.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				
+
 
 				broadcastAll.setEnabled(false);
 				broadcastRandom.setEnabled(false);
@@ -38,13 +43,13 @@ public class GUI extends AgArch {
 		broadcastAll = new JButton("Broadcast all info");
 		broadcastAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-/*
+				/*
 				for(int i=1;i<=premiseCount;i++)
 				{
 					Literal goal = ASSyntax.createLiteral("broadcast",ASSyntax.createNumber(i));
 					getTS().getC().addAchvGoal(goal, null);
 				}
-*/
+				 */
 				broadcastAll.setEnabled(false);
 				broadcastRandom.setEnabled(false);
 			}
@@ -62,29 +67,28 @@ public class GUI extends AgArch {
 	@Override
 	public void act(ActionExec action, List<ActionExec> feedback) {
 		if (action.getActionTerm().getFunctor().startsWith("tell_agents")) {
+			this.agentList = new ArrayList<String>();
 			for(Term term :action.getActionTerm().getTerms())
 			{
-				System.out.println(term.toString());
+				agentList.add(term.toString());
 			}
 			action.setResult(true);
 			feedback.add(action);
 
-			broadcastRandom.setEnabled(true);
-			broadcastAll.setEnabled(true); // enable GUI button
 		} else {
 			super.act(action,feedback); // send the action to the environment to be performed.
 		}
 	}
 
-	
+
 	private void addEdge(String node1, String node2, int cost)
 	{
-		
+
 	}
-	
+
 	private void removeEdge(String node1, String node2)
 	{
-		
+
 	}
 
 	@Override
