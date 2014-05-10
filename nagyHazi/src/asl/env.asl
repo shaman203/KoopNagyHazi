@@ -25,14 +25,14 @@ edge(X,Y,Z).
 							?agent_name(YHandle,Y);
 							+connected(XHandle,YHandle,D);
 							+connected(YHandle,XHandle,D);
-							.send(XHandle,tell,connected(YHandle,D));
-							.send(YHandle,tell,connected(XHandle,D));
+							.send(XHandle,tell,connected(YHandle,Y,D));
+							.send(YHandle,tell,connected(XHandle,X,D));
 							.print("Added connection").
 							
-+!drop_connection(X,Y,D)<-	?agent_name(XHandle,X);
++!drop_connection(X,Y)<-	?agent_name(XHandle,X);
 							?agent_name(YHandle,Y);
 							.abolish(connected(XHandle,YHandle,D));
 							.abolish(connected(YHandle,XHandle,D));
-							.send(XHandle,tell,disconnected(YHandle,D));
-							.send(YHandle,tell,disconnected(XHandle,D));
+							.send(XHandle,tell,disconnected(YHandle));
+							.send(YHandle,tell,disconnected(XHandle));
 							.print("Dropped connection").

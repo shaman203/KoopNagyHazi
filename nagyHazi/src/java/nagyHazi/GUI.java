@@ -4,7 +4,6 @@ package nagyHazi;
 import jason.architecture.AgArch;
 import jason.asSemantics.ActionExec;
 import jason.asSyntax.ASSyntax;
-import jason.asSyntax.ListTerm;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Term;
 
@@ -53,7 +52,6 @@ public class GUI extends AgArch {
 				Literal goal = ASSyntax.createLiteral("drop_connection");
 				goal.addTerms(ASSyntax.createString("router1"));
 				goal.addTerms(ASSyntax.createString("router2"));
-				goal.addTerms(ASSyntax.createNumber(5));
 				getTS().getC().addAchvGoal(goal, null);
 
 			}
