@@ -18,10 +18,23 @@
 
 +!updateIfBetter(Dest,Via,Cost,AltVia,AltCost): Cost < AltCost <- 	.abolish(route(Dest,AltVia,AltCost));
 																	.print("Better route was found ",Cost," ",AltCost );
-																	+route(Dest,Via,Cost).
+																	+route(Dest,Via,Cost);
+																	!routeUpdate(Dest,Cost).
 +!updateIfBetter(Dest,Via,Cost,AltVia,AltCost).
+
++!routeUpdate(Dest,Cost)<- 	.findall(X,connected(X,Y,Z),L);
+							!iterateConnectedRouters(L,Dest,Cost).
+							
++!iterateConnectedRouters([],Dest,Cost).
+
++!iterateConnectedRouters([A|T],Dest,Cost)<- 	.send(A,tell,newRoute(Dest,Cost));
+												!iterateConnectedRouters(T,Dest,Cost).
+     				
++!iterateConnectedRouters([_|T],Dest,Cost)<- 	!iterateConnectedRouters(T,Dest,Cost).
+
++newRoute(Dest,Cost)[source(A)]<- .print(A," told a new route to ", Dest," c= ",Cost).
 
 +disconnected(Peer) <- 	.print("I was disconnected from ",Peer);
 						?connected(Peer,PeerString,Cost);
-						.abolish(connected(Peer,Peer,Cost));
+						.abolish(connected(Peer,PeerString,Cost));
 						.abolish(disconnected(Peer)). 
