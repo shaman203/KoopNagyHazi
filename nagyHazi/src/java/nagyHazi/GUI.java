@@ -49,9 +49,10 @@ public class GUI extends AgArch {
 		broadcastAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				Literal goal = ASSyntax.createLiteral("drop_connection");
+				Literal goal = ASSyntax.createLiteral("create_connection");
 				goal.addTerms(ASSyntax.createString("router1"));
-				goal.addTerms(ASSyntax.createString("router2"));
+				goal.addTerms(ASSyntax.createString("router3"));
+				goal.addTerms(ASSyntax.createNumber(5));
 				getTS().getC().addAchvGoal(goal, null);
 
 			}
