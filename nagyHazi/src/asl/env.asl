@@ -17,7 +17,11 @@ edge(X,Y,Z).
 
 +!parseAgents([A|T])<- 	nagyHazi.translateName(A,AName);
 						+agent_name(A,AName);
+						nagyHazi.isRouter(A,B);
+						!initRouter(A,B,AName);
 						!parseAgents(T).
++!initRouter(A,B,AName): B == 1 <- .send(A,tell,connected(A,AName,0)).     				
++!initRouter(A,B,AName).
      				
 +!parseAgents([_|T])<- 	!parseAgents(T).
 
