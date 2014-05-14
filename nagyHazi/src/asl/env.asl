@@ -2,7 +2,7 @@
 
 /* Initial beliefs and rules */
 
-edge(X,Y,Z).
+
 /* Initial goals */
 
 !start.
@@ -10,6 +10,7 @@ edge(X,Y,Z).
 /* Plans */
 
 +!beat<-.wait(1000);
+		//.print("broadcasting syncbeat");
 		.broadcast(achieve,syncBeat); 
 		!beat.
 
@@ -34,13 +35,16 @@ edge(X,Y,Z).
 							+connected(XHandle,YHandle,D);
 							+connected(YHandle,XHandle,D);
 							.send(XHandle,tell,connected(YHandle,Y,D));
-							.send(YHandle,tell,connected(XHandle,X,D));
-							.print("Added connection").
+							.send(YHandle,tell,connected(XHandle,X,D)).
 							
 +!drop_connection(X,Y)<-	?agent_name(XHandle,X);
 							?agent_name(YHandle,Y);
 							.abolish(connected(XHandle,YHandle,D));
 							.abolish(connected(YHandle,XHandle,D));
 							.send(XHandle,tell,disconnected(YHandle));
-							.send(YHandle,tell,disconnected(XHandle));
-							.print("Dropped connection").
+							.send(YHandle,tell,disconnected(XHandle)).
+							
++!send_message(X,Y)<-	?agent_name(XHandle,X);
+						.send(XHandle,achieve,send_message(Y)).
+						
+												

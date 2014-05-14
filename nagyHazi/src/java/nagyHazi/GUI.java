@@ -27,6 +27,7 @@ public class GUI extends AgArch {
 	JFrame    f;
 	JButton createConnectionBtn;
 	JButton dropConnectionBtn;
+	JButton sendMessageBtn;
 	JComboBox<String> fromBox;
 	JComboBox<String> toBox;
 	JTextField weightField;
@@ -62,9 +63,25 @@ public class GUI extends AgArch {
 				goal.addTerms(ASSyntax.createString((String)toBox.getSelectedItem()));
 				getTS().getC().addAchvGoal(goal, null);
 
+
+			}
+		});
+		
+		sendMessageBtn = new JButton("Send message");
+		sendMessageBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				Literal goal = ASSyntax.createLiteral("send_message");
+				goal.addTerms(ASSyntax.createString((String)fromBox.getSelectedItem()));
+				goal.addTerms(ASSyntax.createString((String)toBox.getSelectedItem()));
+				getTS().getC().addAchvGoal(goal, null);
+
 			}
 		});
 
+		
+		
+		
 		JPanel mainPanel = new JPanel();
 		GroupLayout layout = new GroupLayout(mainPanel);
 		mainPanel.setLayout(layout);
@@ -77,7 +94,8 @@ public class GUI extends AgArch {
 						.addComponent(weightField))
 				.addGroup(layout.createSequentialGroup()
 						.addComponent(createConnectionBtn)
-						.addComponent(dropConnectionBtn))
+						.addComponent(dropConnectionBtn)
+						.addComponent(sendMessageBtn))
 				);
 		layout.setVerticalGroup(
 				layout.createSequentialGroup()
@@ -88,6 +106,7 @@ public class GUI extends AgArch {
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 						.addComponent(createConnectionBtn)
 						.addComponent(dropConnectionBtn)
+						.addComponent(sendMessageBtn)
 						));
 
 		f = new JFrame("Simulator");
