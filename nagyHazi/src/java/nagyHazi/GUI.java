@@ -60,7 +60,6 @@ public class GUI extends AgArch {
 				Literal goal = ASSyntax.createLiteral("drop_connection");
 				goal.addTerms(ASSyntax.createString((String)fromBox.getSelectedItem()));
 				goal.addTerms(ASSyntax.createString((String)toBox.getSelectedItem()));
-				goal.addTerms(ASSyntax.createNumber(5));
 				getTS().getC().addAchvGoal(goal, null);
 
 			}

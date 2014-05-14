@@ -5,8 +5,8 @@ MAS nagyHazi {
 	agents:
 		env agentArchClass nagyHazi.GUI;
 
-		client#2;
-		router#10;
+		//client#2;
+		router#4;
 
 	aslSourcePath:
 		"src/asl";

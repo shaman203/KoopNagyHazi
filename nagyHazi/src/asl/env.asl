@@ -6,8 +6,12 @@ edge(X,Y,Z).
 /* Initial goals */
 
 !start.
-
+!beat.
 /* Plans */
+
++!beat<-.wait(1000);
+		.broadcast(achieve,syncBeat); 
+		!beat.
 
 +!start:true <- .all_names(X);
 				tell_agents(X);

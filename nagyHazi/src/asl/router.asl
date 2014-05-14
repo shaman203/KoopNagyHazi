@@ -14,8 +14,8 @@
 		 .print(X, " is online.").
 
 +connected(Peer,PeerString,Cost) <-	.print("connected to ",Peer," w=",Cost);
-									!updateRoutes(PeerString,Peer,Cost);
-									!tellKnownRoutes(Peer).
+									!updateRoutes(PeerString,Peer,Cost).//;
+									//!tellKnownRoutes(Peer).
 @lg[atomic]
 +!updateRoutes(Destination,Via,Cost)<- 	?route(Destination,AltVia,AltCost);
 										!updateIfBetter(Destination,Via,Cost,AltVia,AltCost).
@@ -24,12 +24,24 @@
 
 
 +!updateIfBetter(Dest,Via,Cost,AltVia,AltCost): Cost < AltCost <- 	.abolish(route(Dest,AltVia,AltCost));
-																	+route(Dest,Via,Cost);
-																	!routeUpdate(Dest,Cost).
+																	+route(Dest,Via,Cost).//;
+																	//!routeUpdate(Dest,Cost).
 +!updateIfBetter(Dest,Via,Cost,AltVia,AltCost).
 
-+!routeUpdate(Dest,Cost)<- 	.findall(X,connected(X,Y,Z),L);
-							!tellNewToConnected(L,Dest,Cost).
+
++!syncBeat<- .findall(Peer,connected(Peer,PeerString,Cost),L);
+			 !tellPeers(L).
++!tellPeers([]).
++!tellPeers([A|T])<- 	!tellKnownRoutes(A);
+						!tellPeers(T).
++!tellPeers([_|T])<- !tellPeers(T).
+
+
+
+
++!routeUpdate(Dest)<- 	.findall(X,connected(X,Y,Z),L);
+						?route(Dest,Via,Cost);
+						!tellNewToConnected(L,Dest,Cost).
 							
 +!tellNewToConnected([],Dest,Cost).
 
@@ -62,6 +74,7 @@
 						?connected(Peer,PeerString,Cost);
 						.abolish(connected(Peer,PeerString,Cost));
 						.abolish(disconnected(Peer));
+						.abolish(route(_,Peer,_));
 						!notifyConnectedOfDisconnection(PeerString).
 						
 +!notifyConnectedOfDisconnection(DiscPeerString)<-.findall(X,connected(X,Y,Z),L);
@@ -69,9 +82,11 @@
 						
 +!notifyOfDisconnection([],DiscPeerString).
 
++!notifyOfDisconnection([Peer|T],DiscPeerString):myName(X) & X == Peer.
 +!notifyOfDisconnection([Peer|T],DiscPeerString)<- .send(Peer,tell,disconnectNotif(DiscPeerString));
 										!notifyOfDisconnection(T,DiscPeerString).
 +!notifyOfDisconnection([_|T],Peer)<- !notifyOfDisconnection(T,DiscPeerString).
 
 +disconnectNotif(DiscPeerString)[source(A)]<- 	.abolish(route(DiscPeerString,A,_));
+												//.abolish(disconnectNotif(DiscPeerString));
 												!notifyConnectedOfDisconnection(DiscPeerString).						
