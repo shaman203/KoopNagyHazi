@@ -18,6 +18,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 
 public class GUI extends AgArch {
@@ -28,6 +29,7 @@ public class GUI extends AgArch {
 	JButton dropConnectionBtn;
 	JComboBox<String> fromBox;
 	JComboBox<String> toBox;
+	JTextField weightField;
 
 	List<String> agentList;
 
@@ -35,15 +37,16 @@ public class GUI extends AgArch {
 
 		fromBox = new JComboBox<String>();
 		toBox = new JComboBox<String>();
-
+		weightField = new JTextField("5");
+		
 		createConnectionBtn = new JButton("Add connection");
 		createConnectionBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
 				Literal goal = ASSyntax.createLiteral("create_connection");
-				goal.addTerms(ASSyntax.createString("router1"));
-				goal.addTerms(ASSyntax.createString("router2"));
-				goal.addTerms(ASSyntax.createNumber(5));
+				goal.addTerms(ASSyntax.createString((String)fromBox.getSelectedItem()));
+				goal.addTerms(ASSyntax.createString((String)toBox.getSelectedItem()));
+				goal.addTerms(ASSyntax.createNumber(Integer.parseInt(weightField.getText())));
 				getTS().getC().addAchvGoal(goal, null);
 
 
@@ -55,8 +58,8 @@ public class GUI extends AgArch {
 			public void actionPerformed(ActionEvent e) {
 
 				Literal goal = ASSyntax.createLiteral("drop_connection");
-				goal.addTerms(ASSyntax.createString("router1"));
-				goal.addTerms(ASSyntax.createString("router3"));
+				goal.addTerms(ASSyntax.createString((String)fromBox.getSelectedItem()));
+				goal.addTerms(ASSyntax.createString((String)toBox.getSelectedItem()));
 				goal.addTerms(ASSyntax.createNumber(5));
 				getTS().getC().addAchvGoal(goal, null);
 
@@ -68,10 +71,12 @@ public class GUI extends AgArch {
 		mainPanel.setLayout(layout);
 
 		layout.setHorizontalGroup(
-				layout.createSequentialGroup()
-				.addComponent(fromBox)
-				.addComponent(toBox)
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addGroup(layout.createSequentialGroup()
+						.addComponent(fromBox)
+						.addComponent(toBox)
+						.addComponent(weightField))
+				.addGroup(layout.createSequentialGroup()
 						.addComponent(createConnectionBtn)
 						.addComponent(dropConnectionBtn))
 				);
@@ -79,10 +84,12 @@ public class GUI extends AgArch {
 				layout.createSequentialGroup()
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 						.addComponent(fromBox)
-						.addComponent(toBox))
+						.addComponent(toBox)
+						.addComponent(weightField))
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 						.addComponent(createConnectionBtn)
 						.addComponent(dropConnectionBtn)
-				);
+						));
 
 		f = new JFrame("Simulator");
 		f.getContentPane().add(mainPanel);
@@ -94,9 +101,23 @@ public class GUI extends AgArch {
 	public void act(ActionExec action, List<ActionExec> feedback) {
 		if (action.getActionTerm().getFunctor().startsWith("tell_agents")) {
 			this.agentList = new ArrayList<String>();
+			fromBox.removeAllItems();
+			toBox.removeAllItems();
 			for(Term term :action.getActionTerm().getTerms())
 			{
-				agentList.add(term.toString());
+				String a = term.toString();
+				a = a.replace("]", "");
+				a = a.replace("[", "");
+				String [] agents = a.split(",");
+				for(String agent : agents)
+				{
+					if(!agent.equals("env"))
+					{
+						agentList.add(agent);
+						fromBox.addItem(agent);
+						toBox.addItem(agent);
+					}
+				}
 			}
 			action.setResult(true);
 			feedback.add(action);
