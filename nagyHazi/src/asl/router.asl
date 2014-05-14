@@ -16,11 +16,12 @@
 		 .print(X, " is online.").
 
 +connected(Peer,PeerString,Cost) <-	.print("connected to ",Peer," w=",Cost);
-									!updateRoutes(PeerString,Peer,Cost).
+									!updateRoutes(PeerString,Peer,Cost,0).
 
-+!updateRoutes(Destination,Via,Cost)<- 	?route(Destination,AltVia,AltCost);
++!updateRoutes(Destination,Via,Cost,Cost2):connectedCheckFailed(X) & X == 1 <- .abolish(connectedCheckFailed(X)). 
++!updateRoutes(Destination,Via,Cost,Cost2)<- 	?route(Destination,AltVia,AltCost);
 										.abolish(routeCheckFailed(1));
-										!updateIfBetter(Destination,Via,Cost,AltVia,AltCost).
+										!updateIfBetter(Destination,Via,Cost+Cost2,AltVia,AltCost).
 
 +?route(Dest,Via,Cost)<- +routeCheckFailed(1). //<- 	+route(Dest,Via,Cost). //if we ask for an unknown destination, add it to the belief base
 
@@ -50,9 +51,9 @@
      				
 +!iterateDestinations([_|T],Peer)<- !iterateDestinations(T,Peer).
 
-@lg[atomic]
+
 +newRoute(Dest,Cost)[source(A)]<-	?connected(A,AName,ConnectionCost);
-									!updateRoutes(Dest,A,Cost+ConnectionCost);
+									!updateRoutes(Dest,A,Cost,ConnectionCost);
 									.abolish(newRoute(Dest,Cost)).
 
 +?connected(A,AName,ConnectionCost) <- +connectedCheckFailed(1).
@@ -64,18 +65,19 @@
 						.abolish(route(_,Peer,_));
 						!notifyConnectedOfDisconnection(PeerString).
 
-+!notifyConnectedOfDisconnection(DiscPeerString): connectedCheckFailed(X) & X == 1 <- abolish(routeCheckFailed(X)).						
++!notifyConnectedOfDisconnection(DiscPeerString): connectedCheckFailed(X) & X == 1 <- .abolish(connectedCheckFailed(X)).						
 +!notifyConnectedOfDisconnection(DiscPeerString)<-.findall(X,connected(X,Y,Z),L);
 												  !notifyOfDisconnection(L,DiscPeerString).
 						
 +!notifyOfDisconnection([],DiscPeerString).
 
-+!notifyOfDisconnection([Peer|T],DiscPeerString):myName(X) & X == Peer.
++!notifyOfDisconnection([Peer|T],DiscPeerString):myName(X) & X == Peer <- !notifyOfDisconnection(T,DiscPeerString).
 +!notifyOfDisconnection([Peer|T],DiscPeerString)<- .send(Peer,tell,disconnectNotif(DiscPeerString));
 										!notifyOfDisconnection(T,DiscPeerString).
-+!notifyOfDisconnection([_|T],Peer)<- !notifyOfDisconnection(T,DiscPeerString).
++!notifyOfDisconnection([_|T],DiscPeerString)<- !notifyOfDisconnection(T,DiscPeerString).
 
-+disconnectNotif(DiscPeerString)[source(A)]<- 	.abolish(route(DiscPeerString,A,_));
++disconnectNotif(DiscPeerString)[source(A)]:myNameString(X) & X== DiscPeerString. 
++disconnectNotif(DiscPeerString)[source(A)] <- 	.abolish(route(DiscPeerString,A,C));
 												.abolish(disconnectNotif(DiscPeerString));
 												!notifyConnectedOfDisconnection(DiscPeerString).						
 
