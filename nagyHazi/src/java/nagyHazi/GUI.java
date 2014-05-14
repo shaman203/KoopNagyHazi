@@ -7,15 +7,16 @@ import jason.asSyntax.ASSyntax;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Term;
 
-import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.GroupLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
-import javax.swing.JScrollPane;
+import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
 
@@ -23,18 +24,22 @@ public class GUI extends AgArch {
 
 	JTextArea jt;
 	JFrame    f;
-	JButton broadcastRandom;
-	JButton broadcastAll;
+	JButton createConnectionBtn;
+	JButton dropConnectionBtn;
+	JComboBox<String> fromBox;
+	JComboBox<String> toBox;
 
 	List<String> agentList;
 
 	public GUI() {
-		jt = new JTextArea(10, 30);
-		jt.setEditable(false);
-		broadcastRandom = new JButton("Add connection");
-		broadcastRandom.addActionListener(new ActionListener() {
+
+		fromBox = new JComboBox<String>();
+		toBox = new JComboBox<String>();
+
+		createConnectionBtn = new JButton("Add connection");
+		createConnectionBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+
 				Literal goal = ASSyntax.createLiteral("create_connection");
 				goal.addTerms(ASSyntax.createString("router1"));
 				goal.addTerms(ASSyntax.createString("router2"));
@@ -45,11 +50,11 @@ public class GUI extends AgArch {
 			}
 		});
 
-		broadcastAll = new JButton("Drop connection");
-		broadcastAll.addActionListener(new ActionListener() {
+		dropConnectionBtn = new JButton("Drop connection");
+		dropConnectionBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
-				Literal goal = ASSyntax.createLiteral("create_connection");
+
+				Literal goal = ASSyntax.createLiteral("drop_connection");
 				goal.addTerms(ASSyntax.createString("router1"));
 				goal.addTerms(ASSyntax.createString("router3"));
 				goal.addTerms(ASSyntax.createNumber(5));
@@ -58,11 +63,29 @@ public class GUI extends AgArch {
 			}
 		});
 
+		JPanel mainPanel = new JPanel();
+		GroupLayout layout = new GroupLayout(mainPanel);
+		mainPanel.setLayout(layout);
+
+		layout.setHorizontalGroup(
+				layout.createSequentialGroup()
+				.addComponent(fromBox)
+				.addComponent(toBox)
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+						.addComponent(createConnectionBtn)
+						.addComponent(dropConnectionBtn))
+				);
+		layout.setVerticalGroup(
+				layout.createSequentialGroup()
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+						.addComponent(fromBox)
+						.addComponent(toBox))
+						.addComponent(createConnectionBtn)
+						.addComponent(dropConnectionBtn)
+				);
+
 		f = new JFrame("Simulator");
-		f.getContentPane().setLayout(new BorderLayout());
-		f.getContentPane().add(BorderLayout.NORTH, new JScrollPane(jt));
-		f.getContentPane().add(BorderLayout.CENTER, broadcastRandom);
-		f.getContentPane().add(BorderLayout.SOUTH, broadcastAll);
+		f.getContentPane().add(mainPanel);
 		f.pack();
 		f.setVisible(true);
 	}

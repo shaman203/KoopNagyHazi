@@ -25,7 +25,7 @@ edge(X,Y,Z).
      				
 +!parseAgents([_|T])<- 	!parseAgents(T).
 
-+!create_connection(X,Y,D)<-	?agent_name(XHandle,X);
++!create_connection(X,Y,D)<-?agent_name(XHandle,X);
 							?agent_name(YHandle,Y);
 							+connected(XHandle,YHandle,D);
 							+connected(YHandle,XHandle,D);

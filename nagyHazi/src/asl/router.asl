@@ -13,10 +13,6 @@
 		 +myName(X);
 		 .print(X, " is online.").
 
-/* +connected(Peer,PeerString,Cost):myName(X) & X == Peer <-	.print("loopback added");
-									!updateRoutes(PeerString,Peer,Cost);
-									.abolish(connected(Peer,PeerString,Cost)).*/
-									
 +connected(Peer,PeerString,Cost) <-	.print("connected to ",Peer," w=",Cost);
 									!updateRoutes(PeerString,Peer,Cost);
 									!tellKnownRoutes(Peer).
@@ -33,15 +29,15 @@
 +!updateIfBetter(Dest,Via,Cost,AltVia,AltCost).
 
 +!routeUpdate(Dest,Cost)<- 	.findall(X,connected(X,Y,Z),L);
-							!iterateConnectedRouters(L,Dest,Cost).
+							!tellNewToConnected(L,Dest,Cost).
 							
-+!iterateConnectedRouters([],Dest,Cost).
++!tellNewToConnected([],Dest,Cost).
 
-+!iterateConnectedRouters([A|T],Dest,Cost):myName(X) & X == A <- !iterateConnectedRouters(T,Dest,Cost).
-+!iterateConnectedRouters([A|T],Dest,Cost)<- 	.send(A,tell,newRoute(Dest,Cost));
-												!iterateConnectedRouters(T,Dest,Cost).
++!tellNewToConnected([A|T],Dest,Cost):myName(X) & X == A <- !tellNewToConnected(T,Dest,Cost).
++!tellNewToConnected([A|T],Dest,Cost)<- 	.send(A,tell,newRoute(Dest,Cost));
+												!tellNewToConnected(T,Dest,Cost).
      				
-+!iterateConnectedRouters([_|T],Dest,Cost)<- 	!iterateConnectedRouters(T,Dest,Cost).
++!tellNewToConnected([_|T],Dest,Cost)<- 	!tellNewToConnected(T,Dest,Cost).
 
 
 +!tellKnownRoutes(Peer):myName(X) & X == Peer. 
@@ -65,4 +61,17 @@
 +disconnected(Peer) <- 	.print("I was disconnected from ",Peer);
 						?connected(Peer,PeerString,Cost);
 						.abolish(connected(Peer,PeerString,Cost));
-						.abolish(disconnected(Peer)). 
+						.abolish(disconnected(Peer));
+						!notifyConnectedOfDisconnection(PeerString).
+						
++!notifyConnectedOfDisconnection(DiscPeerString)<-.findall(X,connected(X,Y,Z),L);
+												  !notifyOfDisconnection(L,DiscPeerString).
+						
++!notifyOfDisconnection([],DiscPeerString).
+
++!notifyOfDisconnection([Peer|T],DiscPeerString)<- .send(Peer,tell,disconnectNotif(DiscPeerString));
+										!notifyOfDisconnection(T,DiscPeerString).
++!notifyOfDisconnection([_|T],Peer)<- !notifyOfDisconnection(T,DiscPeerString).
+
++disconnectNotif(DiscPeerString)[source(A)]<- 	.abolish(route(DiscPeerString,A,_));
+												!notifyConnectedOfDisconnection(DiscPeerString).						
